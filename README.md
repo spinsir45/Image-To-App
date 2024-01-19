@@ -19,9 +19,11 @@ Quickly creates Desktop shortcuts for your AppImages.
 
 4. Creating the details.txt file
     - Add the following text to your details.txt file
+    ```txt
     Name = your app name
     Comment = Any comment you want
     Categories = Choose a category defined by [Freedesktop](https://specifications.freedesktop.org/menu-spec/latest/apa.html)
+    ```
 
 5. Run the script
     - Once all the files have been added run the command `image_to_app.py` while in the directory you just created.
