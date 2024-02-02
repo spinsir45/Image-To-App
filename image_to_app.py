@@ -11,8 +11,17 @@ if not os.path.isdir(LOCAL_APP_DIR):
     print(f'ERROR: the file path "{LOCAL_APP_DIR}" could not be found.')
     exit(1)
 
+""" 
+todo: -n --new [appimage_name]: creates a new folder in the .local/appimages dir for the new appimage
+todo: -u --update [none or appimage_name]: updates all appimages by default. Else it will updated the given appimage.
+todo: -i --icon [file_path, appimage_name]: Adds a icon to an appimage
+todo: -l --list: Lists all appimages found in the .local/appimages dir
+todo: -d --delete [appimage]: deletes the given appimage
+todo: -m --modify [appimage]: allows the user to modify the given appimage .desktop file
+"""
+
 class ImageToApp:
-    _catagories = ('AudioVideo', 'Audio', 'Video', 'Development', 'Education', 'Game', 'Graphics', 'Network', 'Office', 'Science', 'Settings', 'System', 'Utility')
+    _CATAGORIES = ('AudioVideo', 'Audio', 'Video', 'Development', 'Education', 'Game', 'Graphics', 'Network', 'Office', 'Science', 'Settings', 'System', 'Utility')
     _build_dir:str = None
     _app_icon_name:str = None
     _appimage_name:str = None
@@ -116,11 +125,13 @@ class ImageToApp:
         f.write(textwrap.dedent(file))
         f.close()
         # TODO: Check for errors
+        # Make the file executable
         subprocess.run(['chmod', '+x', f'{LOCAL_APP_DIR}/{self._app_name}.desktop'])
+        # Update the environment to recognize the new .desktop file
         subprocess.run(['update-desktop-database', f'{LOCAL_APP_DIR}/{self._app_name}.desktop'])
 
     def run(self) -> None:
-        """ Class the methods to create a desktop application. """
+        """ Calls the methods to create a desktop application. """
 
         self.__read_build_dir()
         self.__create_desktop_file()
