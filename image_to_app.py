@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, sys
+import os, sys, shutil
 import subprocess
 import argparse
 import textwrap
@@ -21,6 +21,7 @@ todo: -m --modify [appimage]: allows the user to modify the given appimage .desk
 """
 
 class ImageToApp:
+    _APPIMG_DIR = f'{HOME_DIR}/.local/appimages'
     _CATAGORIES = ('AudioVideo', 'Audio', 'Video', 'Development', 'Education', 'Game', 'Graphics', 'Network', 'Office', 'Science', 'Settings', 'System', 'Utility')
     _build_dir:str = None
     _app_icon_name:str = None
@@ -130,14 +131,78 @@ class ImageToApp:
         # Update the environment to recognize the new .desktop file
         subprocess.run(['update-desktop-database', f'{LOCAL_APP_DIR}/{self._app_name}.desktop'])
 
-    def run(self) -> None:
+    def __build_desktop_file(self) -> None:
         """ Calls the methods to create a desktop application. """
 
         self.__read_build_dir()
         self.__create_desktop_file()
         print("Finished")
 
+    def __delete_app(self, appimg_name: str) -> None:
+        """ Deletes both the appimg dir and its desktop file.
+        
+        Arguments:
+            appimg_name (str): The name of the appimg dir to be deleted.
+        """
+
+        file_path: str = f'{self._APPIMG_DIR}/{appimg_name}'
+        # check if the file exists
+        os.path.exists(file_path)
+        try:
+            shutil.rmtree(file_path)
+            print(f'{appimg_name} has been deleted.')
+        except Exception as e:
+            print('An error occurred while attempting to delete the files:\n')
+            print(e)
+
+    def __list_apps(self) -> None:
+        """ Lists all current apps found in the appimages dir. """
+
+        try:
+            files: str = os.listdir(self._APPIMG_DIR)
+        except Exception as e:
+            print('An error occurred while fetching files:\n')
+            print(e)
+            return
+        for file in files:
+            print(file)
+
+    def __get_icon_name(self, path: str) -> str:
+        """ Finds the icon name from the given file path.
+        
+        Arguments:
+            path (str): The file path of the icon.
+
+        Returns:
+            str: The name of the icon.
+        """
+        split_path: list = path.split('/')
+        return split_path[-1].strip()
+
+
+    def __add_icon(self, path: str, appimg_name: str) -> None:
+        """ Adds an icon to the appimg file.
+        
+        Arguments:
+            path (str): The path to the icon file.
+
+            appimg_name (str): The name of the appimg dir to add the icon to.
+        """
+
+        icon_name: str = self.__get_icon_name(path)
+        destination_path: str = f'{self._APPIMG_DIR}/{appimg_name}/{icon_name}'
+
+        # Copy the icon to the appimg dir
+        try:
+            shutil.copy(path, destination_path)
+        except Exception as e:
+            print("A failure occurred while trying to add the icon:\n")
+            print(e)
+        # update the .desktop file
+        # todo: prompt the user for details on the .desktop file instead of
+        # having them create a details.txt file.
+
 
 if __name__ == '__main__':
     img_to_app = ImageToApp()
-    img_to_app.run()
+    img_to_app.__build_desktop_file()
