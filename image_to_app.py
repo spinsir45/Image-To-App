@@ -148,31 +148,35 @@ class ImageToApp:
             ["update-desktop-database", f"{LOCAL_APP_DIR}/{self._app_name}.desktop"]
         )
 
-    def __build_desktop_file(self) -> None:
-        """Calls the methods to create a desktop application."""
+    def create_app(self, appimg_path: str, icon_path: str) -> None:
+        """Creates a .desktop app connected with an appimage
+
+        Args:
+            appimg_path (str): The path to the .Appimage file
+            icon_path (str): The path to the icon file
+        """        
 
         self.__read_build_dir()
         self.__create_desktop_file()
-        print("Finished")
 
-    def __delete_app(self, appimg_name: str) -> None:
+    def delete_app(self, app_name: str) -> None:
         """Deletes both the appimg dir and its desktop file.
 
         Arguments:
             appimg_name (str): The name of the appimg dir to be deleted.
         """
 
-        file_path: str = f"{self._APPIMG_DIR}/{appimg_name}"
+        file_path: str = f"{self._APPIMG_DIR}/{app_name}"
         # check if the file exists
         os.path.exists(file_path)
         try:
             shutil.rmtree(file_path)
-            print(f"{appimg_name} has been deleted.")
+            print(f"{app_name} has been deleted.")
         except Exception as e:
             print("An error occurred while attempting to delete the files:\n")
             print(e)
 
-    def __list_apps(self) -> None:
+    def list_apps(self) -> None:
         """Lists all current apps found in the appimages dir."""
 
         try:
@@ -180,7 +184,7 @@ class ImageToApp:
         except Exception as e:
             print("An error occurred while fetching files:\n")
             print(e)
-            return
+            exit(1)
         for file in files:
             print(file)
 
@@ -196,24 +200,31 @@ class ImageToApp:
         split_path: list = path.split("/")
         return split_path[-1].strip()
 
-    def __add_icon(self, path: str, appimg_name: str) -> None:
-        """Adds an icon to the appimg file.
+    def update_icon(self, icon_path: str, app_name: str) -> None:
+        """Updates an icon to the appimg file.
 
         Arguments:
-            path (str): The path to the icon file.
+            icon_path (str): The path to the icon file.
 
             appimg_name (str): The name of the appimg dir to add the icon to.
         """
 
-        icon_name: str = self.__get_icon_name(path)
-        destination_path: str = f"{self._APPIMG_DIR}/{appimg_name}/{icon_name}"
+        # Check if path exists
+        if not os.path.exists(icon_path):
+            print(f"The path '{icon_path}' does not exist.")
+            exit(1)
+
+        # Create path to copy the icon
+        icon_name: str = self.__get_icon_name(icon_path)
+        destination_path: str = f"{self._APPIMG_DIR}/{app_name}/{icon_name}"
 
         # Copy the icon to the appimg dir
         try:
-            shutil.copy(path, destination_path)
+            shutil.copy(icon_path, destination_path)
         except Exception as e:
             print("A failure occurred while trying to add the icon:\n")
             print(e)
+            exit(1)
         # update the .desktop file
         # todo: prompt the user for details on the .desktop file instead of
         # having them create a details.txt file.
@@ -229,16 +240,60 @@ class TerminalInterface:
         self.image_to_app = ImageToApp()
         self.__add_args()
         self.args = self.parser.parse_args()
+        self.__run_commands()
+
+    def __run_commands(self) -> None:
+        """ Runs the commands passed by the user."""
+        
+        if self.args.new:
+            self.image_to_app.create_app()
+        if self.args.update:
+            print('update')
+        if self.args.icon:
+            self.image_to_app.update_icon(self.args.icon[0], self.args.icon[1])
+        if self.args.list:
+            self.image_to_app.list_apps()
+        if self.args.delete:
+            self.image_to_app.delete_app(self.args.delete)
 
     def __add_args(self) -> None:
         """ Adds arguments to the parser. """
 
-        self.parser.add_argument('-n', '--new')
-        self.parser.add_argument('-u', '--update')
-        self.parser.add_argument('-i', '--icon')
-        self.parser.add_argument('-l', '--list')
-        self.parser.add_argument('-d', '--delete')
-        self.parser.add_argument('-m', '--modify')
+        self.parser.add_argument(
+            '-n',
+            '--new',
+            nargs=2,
+            help="Creates a new .desktop file.",
+            metavar=("[appimg_path]", "[icon_path]"),
+            )
+        self.parser.add_argument(
+            '-u',
+            '--update',
+            help="Updates the .desktop file to match the .Appimage name.",
+            metavar="[app_name]"
+            )
+        self.parser.add_argument(
+            '-i',
+            '--icon',
+            help="Updates the icon of a given app.",
+            metavar=("[icon_path]", "[app_name]"),
+            nargs=2
+            )
+        self.parser.add_argument(
+            '-l',
+            '--list',
+            help="Lists all app names.",
+            metavar='',
+            action='store_const',
+            const=None
+            )
+        self.parser.add_argument(
+            '-d',
+            '--delete',
+            help="Deletes the Appimage, icon, and .desktop file.",
+            metavar="[app_name]"
+            )
+        # self.parser.add_argument('-m', '--modify') #TODO: add feature to modify .desktop file
 
 
 if __name__ == "__main__":
