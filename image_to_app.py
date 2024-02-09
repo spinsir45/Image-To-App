@@ -246,7 +246,7 @@ class TerminalInterface:
         """ Runs the commands passed by the user."""
         
         if self.args.new:
-            self.image_to_app.create_app()
+            self.image_to_app.create_app(self.args.new[0], self.args.new[1])
         if self.args.update:
             print('update')
         if self.args.icon:
