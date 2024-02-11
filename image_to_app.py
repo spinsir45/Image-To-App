@@ -239,7 +239,6 @@ class ImageToApp:
                 line = f"{keyword}={new_line}\n"
             updated_file += line
 
-        print(updated_file)
         # Write the file
         f = open(file_path, 'w')
         f.write(updated_file)
@@ -275,7 +274,6 @@ class ImageToApp:
                 command: str = f'ls {self._APPIMG_DIR}/{app} | grep .AppImage'
                 appimg_name: str = subprocess.run(command, capture_output=True, text=True, shell=True).stdout.strip()
                 appimg_path: str = f"{self._APPIMG_DIR}/{app}/{appimg_name}"
-                print(appimg_path)
                 self.__update_desktop_file('Exec', appimg_path, app)
 
 
