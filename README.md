@@ -36,7 +36,7 @@ When your appimage updates it will likely break your .desktop file. This can be
 fixed by running the command `image_to_app.py -u <app-name>`. Or you can run
 `image_to_app.py -u` to update all the .desktop files.
 
-### Update the desktop icon
+### Change the desktop icon
 
 `image_to_app.py -i <path-to-icon> <app-name>`
 
