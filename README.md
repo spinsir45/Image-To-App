@@ -1,6 +1,6 @@
 # Image To App
 
-Quickly creates Desktop shortcuts for your AppImages.
+Quickly creates .desktop files for your AppImages.
 
 ## Prerequisites
 
@@ -32,9 +32,9 @@ into `~/.local/image_to_app/<app-name>`.
 
 ### Update your desktop app
 
-When your appimage updates it will likely break your desktop app. This can be
+When your appimage updates it will likely break your .desktop file. This can be
 fixed by running the command `image_to_app.py -u <app-name>`. Or you can run
-`image_to_app.py -u` to update all the applications.
+`image_to_app.py -u` to update all the .desktop files.
 
 ### Update the desktop icon
 
