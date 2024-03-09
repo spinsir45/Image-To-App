@@ -2,28 +2,48 @@
 
 Quickly creates Desktop shortcuts for your AppImages.
 
-## How to use:
+## Prerequisites
+
+> [!IMPORTANT]
+> Make sure the file path `~/.local/bin` exists and that it is added to your `$PATH`.
+
+## Installation:
 
 1. Download the file `image_to_app.py` file.
 
-2. Add the file to PATH
-    1. Download the image_to_app.py file.
-    2. Move the file to `~/.local/bin`
-    3. Make the file executable.
+2. Move the file into `~/.local/bin` and make the file executable.
 
-3. Prep your AppImage
-    1. Create a new folder.
-    2. Add the AppImage.
-    3. Add the icon image you want for the desktop icon.
-    4. Create a file called details.txt
+> [!TIP]
+> You can rename the file to whatever you want. Just remember that whatever you
+> name the file that is the command you will call to run the app in the terminal.
 
-4. Creating the details.txt file
-    - Add the following text to your details.txt file
-    ```txt
-    Name = your app name
-    Comment = Any comment you want
-    Categories = Choose a category defined by [Freedesktop](https://specifications.freedesktop.org/menu-spec/latest/apa.html)
-    ```
+## How to use.
 
-5. Run the script
-    - Once all the files have been added run the command `image_to_app.py` while in the directory you just created.
+### Making a new desktop app
+
+This command will generate a new .desktop file and copy the appimage and icon 
+into `~/.local/image_to_app/<app-name>`. 
+
+1. Download your appimage and image you wish to use as an icon.
+
+2. Run the command `image_to_app.py -n <path-to-appimage> <path-to-app-icon>`.
+
+3. Answer the prompts.
+
+### Update your desktop app
+
+When your appimage updates it will likely break your desktop app. This can be
+fixed by running the command `image_to_app.py -u <app-name>`. Or you can run
+`image_to_app.py -u` to update all the applications.
+
+### Update the desktop icon
+
+`image_to_app.py -i <path-to-icon> <app-name>`
+
+### View all the apps you have installed
+
+`image_to_app.py -l`
+
+### Delete an app
+
+`image_to_app.py -d <app-name>`
